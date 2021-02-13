@@ -1,50 +1,48 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import BlogDisplay from './components/BlogDisplay'
 import blogService from './services/blogs'
 import LoginForm  from './components/LoginForm'
 import Button from './components/Button'
 import BlogSubForm from './components/BlogSubForm'
 import SystemMessage from './components/SystemMessage'
-//alright we need a login form that disappears once the user is logged in (done)
-//react state for user inputs (need fixing)
-//jsx form with an input handler or submit event (done)
-//input handler which uses the blogService to authenticate info, and return a pass/fail reference (e.g. token), we need to figure out how to route root addr to whatever localhost port backend is running on
-//we can save token to local storage once we get it (done)
-//conditional rendering of the login form and log out based on reference
-//conditional styling based on reference (error red)
-//conditional render of an additional form used for submitting a new blog
-//conditional styling on submission (green correct)
+import Toggle from './components/Toggle'
+//let's try and refractor the axios requests to use await/asynch
+//let's make it so that your blog posting function:
+//show up as  submit blog button (done)
+//onclick, it expands into the actual form with a cancel button (done)
+//on submission or cancellation the form is cleared and retracted (done)
+//-we could use a wrapper component for visibility (done)
+//make use of ref, React.forwardRef and useImperativeHandler, so you can access wrapper component's visibility from app (done)
+//move the states for form to the form component (done, but we need to find a way to modify a variable out of .then, done)
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [blogs, setBlogs] = useState([])
+  const [name, setName] = useState('')
   const [loggedIn, setLoggedIn] = useState(false)
   const [sysMsg, setSysMsg] = useState('')
   const [isError, setIsError] = useState(false)
-  const [blogTitle, setBlogTitle] = useState('')
-  const [blogURL, setBlogURL] = useState('')
-  const [blogOwner, setBlogOwner] = useState('')
+  const toggleRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs => {
-      setBlogs( blogs )
+    const setInitialBlogs = async () => { //we need to do this because effect hooks are made synchronous to avoid race condition
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
       if(window.localStorage.getItem('token') !== null){
         setLoggedIn(true)
       }
-    })  
+      if(window.localStorage.getItem('name') !== null){
+        setName(window.localStorage.getItem('name'))
+      }
+    }
+
+    setInitialBlogs()
   }, [])
 
   const clearLoginInput = () => {
     setUsername('')
     setPassword('')
-  }
-
-  const clearBlogInput = () => {
-    //console.log('clearing is being called')
-    setBlogTitle('')
-    setBlogURL('')
-    setBlogOwner('')
   }
 
   const changeSysMsg = (isError, sysMsg) => {
@@ -56,69 +54,69 @@ const App = () => {
     setTimeout(()=> changeSysMsg(false, ''), timeout)
   }
 
-  const loginHandler = event => {//we need to have some type of error handling here
+  const loginHandler = async event => {//we need to have some type of error handling here
     event.preventDefault()//this is important!
-    console.log('login handler is being called', username, password)
-    blogService.authenticateUser(username, password)
-    .then(authResult => {
-      console.log('result from authentication', authResult)
+    try{
+      const authResult = await blogService.authenticateUser(username, password)
+
       if(authResult.token){
-        //add token to local storage
-        //display a success message
-        console.log('we logged in')
         window.localStorage.setItem('token', authResult.token)
+        window.localStorage.setItem('name', authResult.name)
         setLoggedIn(true)
+        setName(authResult.name)
         clearLoginInput()
-        //setLoggedIn(true)
         changeSysMsg(false, 'Successfully logged in.')
       }
       else{
-        //add a set state for error and make error display component visible and time it
-        console.log('authentication failed')
         changeSysMsg(true, 'Failed to logg in.')
       }
-      resetSysMsg(3000)
-    })
-    .catch(error =>{
-      changeSysMsg(true, 'Something went wrong.')
-      resetSysMsg(3000)
-      console.log('authentication error', error)
-    })//ok this is working nice
+    }
+    catch(error){
+      changeSysMsg(true, `Something went wrong: ${error.response.data.error}`)
+    }
+    resetSysMsg(3000)
   }
 
   const logoutHandler = () => {
     window.localStorage.removeItem('token')
+    window.localStorage.removeItem('name')
     setLoggedIn(false)
+    setName('')
   }
 
-  const blogSubHandler = event => {
-    event.preventDefault()
-    blogService.submitBlog(blogTitle, blogURL, blogOwner, window.localStorage.getItem('token'))
-    .then(addedBlog => {
-      //console.log('submission successful!', addedBlog)
-      //clearBlogInput()
+  const blogSubHandler = async (blogTitle, blogURL, blogOwner) => {
+    let subSuccess = false
+
+    try{
+      const addedBlog = await blogService.submitBlog(blogTitle, blogURL, blogOwner, window.localStorage.getItem('token'))
       setBlogs(blogs.concat(addedBlog))
-      //event.target.reset()
-      clearBlogInput()//something is wrong with this, this is not clearning, is it because the actual update functions of the form are defined inside their respective component?
       changeSysMsg(false, 'Blog submission successful.')
-      resetSysMsg(3000)
-    })
-    .catch(error =>{
-      console.log('blog submission failed', error)
-      changeSysMsg(true, error)
-      resetSysMsg(3000)
-    })
-  }
+      toggleRef.current.toggleVisibility()//hide the blog submission form
+      subSuccess = true
+    }
+    catch(error){
+      console.log('blog submission failed', error.response.data.error)
+      changeSysMsg(true, error.response.data.error)
+    }
 
-  //const submitUserInfo = () => loginHandler(username, password)
+    resetSysMsg(3000)
+    return subSuccess
+  }
 
   return (
     <div>
       <SystemMessage isError = {isError} sysMsg = {sysMsg}/>
       {!loggedIn && <LoginForm loginHandler={loginHandler} username = {username} setUsername={setUsername} password ={password} setPassword={setPassword}/>}
-      {loggedIn && <Button name={'log out'} action={logoutHandler}/>}
-      {loggedIn && <BlogSubForm formSubHandler={blogSubHandler} title = {blogTitle} setTitle={setBlogTitle} url ={blogURL} setURL={setBlogURL} author ={blogOwner} setAuthor={setBlogOwner}/>}
-      {loggedIn && <BlogDisplay blogs = {blogs}/>}
+      {loggedIn &&
+        <div>
+          <h2>Hello {name}!</h2>
+          <Button name={'log out'} action={logoutHandler}/>
+          <Toggle ref = {toggleRef}>
+            <BlogSubForm formSubHandler={blogSubHandler}/>
+          </Toggle>
+          <BlogDisplay blogs = {blogs}/>
+        </div>
+      }
     </div>
   )
 }

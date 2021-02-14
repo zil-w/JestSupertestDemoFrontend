@@ -17,15 +17,15 @@ const Toggle = React.forwardRef((props, ref) => {
 
     return(//what would happen if we apply styling to a component from outside of it? let's give it a try
     //well, turns out it does nothing, we have to wrap the component in div's
-        <div>
+        <>
             <div style = {showButtonVisibility}>
-                <Button name = 'Add blog' action = {toggleVisibility} style={showButtonVisibility}/>
+                <Button name = {props.showButtonName} action = {toggleVisibility}/>
             </div>
             <div style = {hideButtonVisibility}>
+                <Button name = {props.hideButtonName} action = {toggleVisibility}/>
                 {props.children}
-                <Button name = 'Cancel' action = {toggleVisibility}/>
             </div>
-        </div>
+        </>
     )
 })
 

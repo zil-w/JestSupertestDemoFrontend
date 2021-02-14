@@ -103,6 +103,18 @@ const App = () => {
     return subSuccess
   }
 
+  const blogUpdateHandler = async updatedBlog => {
+    console.log('blog updater is at least being called')
+    try{
+      const submittedUpdate = await blogService.updateBlog(updatedBlog)
+      const updatedBlogs = blogs.map(blog => (blog.id === submittedUpdate.id) ? submittedUpdate : blog)
+      setBlogs(updatedBlogs)
+    }
+    catch(error){
+      console.log('failed to update blog:', error)
+    }
+  }
+
   return (
     <div>
       <SystemMessage isError = {isError} sysMsg = {sysMsg}/>
@@ -111,10 +123,10 @@ const App = () => {
         <div>
           <h2>Hello {name}!</h2>
           <Button name={'log out'} action={logoutHandler}/>
-          <Toggle ref = {toggleRef}>
+          <Toggle ref = {toggleRef} showButtonName = 'Add Blog' hideButtonName = 'Cancel'>
             <BlogSubForm formSubHandler={blogSubHandler}/>
           </Toggle>
-          <BlogDisplay blogs = {blogs}/>
+          <BlogDisplay blogs = {blogs} blogUpdate = {blogUpdateHandler}/>
         </div>
       }
     </div>

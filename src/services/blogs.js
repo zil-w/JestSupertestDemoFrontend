@@ -3,26 +3,6 @@ const tempUrl = 'http://localhost:3003'
 const baseUrl = '/api/blogs'
 const loginUrl = '/api/'
 
-// const getAll = () => {
-//   const request = axios.get(tempUrl + baseUrl)
-//   return request.then(response => response.data)
-// }
-
-// const authenticateUser = (username, password) => {
-//   //console.log('received info', username, password)
-//   const request = axios.post(tempUrl + loginUrl, {username, password})
-//   return request.then(res => {
-//     //console.log('received response from server', res.data)
-//     return res.data})
-// }
-
-// const submitBlog = (title, url, author, token) => {
-//   const request = axios.post(tempUrl + baseUrl, {title, url, author}, {headers:{'Authorization': `bearer ${token}`}})
-//   return request.then(res => {
-//     console.log('received response from server', res.data)
-//     return res.data})
-// }
-
 const getAll = async () => {
   try{
     const response = await axios.get(tempUrl + baseUrl)
@@ -53,4 +33,16 @@ const submitBlog = async (title, url, author, token) => {
   }
 }
 
-export default { getAll, authenticateUser, submitBlog }
+const updateBlog = async updatedBlog => {
+  console.log('blog updater in service is being called')
+  try{
+    delete updatedBlog.user //this property makes mongoose's findByIdAndUpdate method throw a cast error, for objectID, for some reason
+    const updateBlogRes = await axios.put(tempUrl + baseUrl + `/${updatedBlog.id}`, updatedBlog)
+    return updateBlogRes.data
+  }
+  catch(error){
+    throw error
+  }
+}
+
+export default { getAll, authenticateUser, submitBlog, updateBlog }

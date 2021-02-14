@@ -29,7 +29,7 @@ const BlogSubForm = ({formSubHandler}) => {
             <input type='text' id = 'Blog URL'  value ={blogURL} onChange={event => setBlogURL(event.target.value)}/><br/>
             <label htmlFor="Blog Author">BlogAuthor:</label>
             <input type='text' id = 'Blog Author' value ={blogOwner} onChange={event => setBlogOwner(event.target.value)}/><br/>
-            <input type="submit" value = 'add blog'/>
+            <input type="submit" value = 'Submit'/>
         </form>
     )
 }

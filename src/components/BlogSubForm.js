@@ -14,7 +14,6 @@ const BlogSubForm = ({formSubHandler}) => {
     const submitForm = async event => {
         event.preventDefault()
         const subSuccess = await formSubHandler(blogTitle, blogURL, blogOwner)
-        console.log('blog submission status:', subSuccess)
         if(subSuccess){
             clearBlogInput()
         }

@@ -17,9 +17,22 @@ const App = () => {
   const [isError, setIsError] = useState(false)
   const toggleRef = useRef()
 
+  const likesComparator = (firstBlog, secondBlog) => {//going for descending order
+    if(firstBlog.likes > secondBlog.likes){
+      return -1
+    }
+    else if(secondBlog.likes > firstBlog.likes){
+      return 1
+    }
+    else{
+      return 0
+    }
+  }
+
   useEffect(() => {
     const setInitialBlogs = async () => { //we need to do this because effect hooks are made synchronous to avoid race condition
       const blogs = await blogService.getAll()
+      blogs.sort(likesComparator)
       setBlogs(blogs)
       if(window.localStorage.getItem('token') !== null){
         setLoggedIn(true)
@@ -76,6 +89,16 @@ const App = () => {
     setName('')
   }
 
+  //actually we don't need this at all because newly submitted blogs have zero like
+  // const insertElementAtIndex = (element, index, array) => {//can add spread notation to element to insert many elements
+  //   //we can do splice(index, #elements to delete, element) but it mutates the original array
+  //   const updatedArray = [
+  //     ...array.slice(0, index),
+  //     element,
+  //     ...array.slice(index)
+  //   ]
+  // }
+
   const blogSubHandler = async (blogTitle, blogURL, blogOwner) => {
     let subSuccess = false
 
@@ -99,6 +122,7 @@ const App = () => {
     try{
       const submittedUpdate = await blogService.updateBlog(updatedBlog)
       const updatedBlogs = blogs.map(blog => (blog.id === submittedUpdate.id) ? submittedUpdate : blog)
+      updatedBlogs.sort(likesComparator) // performance with this might be bad, maybe we can insert the updated blogs by likes and before that/then remove the overwritten blog
       setBlogs(updatedBlogs)
     }
     catch(error){

@@ -56,7 +56,7 @@ const App = () => {
   }
 
   const resetSysMsg = timeout => {
-    setTimeout(()=> changeSysMsg(false, ''), timeout)
+    setTimeout(() => changeSysMsg(false, ''), timeout)
   }
 
   const loginHandler = async event => {//we need to have some type of error handling here

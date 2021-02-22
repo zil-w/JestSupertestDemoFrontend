@@ -1,19 +1,19 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import Button from './Button'
 
 const Blog = ({ blog, blogUpdate, blogDelete }) => {
   const [show, setShow] = useState(false)
-  const showWhenShown = {display: (show ? '' : 'none')}
+  const showWhenShown = { display: (show ? '' : 'none') }
 
   const toggleShow = () => {
     setShow(!show)
   }
 
   const addLike = async () => {
-    const newBlog = {...blog, likes: blog.likes + 1}
+    const newBlog = { ...blog, likes: blog.likes + 1 }
     await blogUpdate(newBlog)
   }
-  
+
   const deleteBlog = async () => {
     const shouldDelete = window.confirm('Would you like to delete this blog?')
     if(shouldDelete){
@@ -32,12 +32,12 @@ const Blog = ({ blog, blogUpdate, blogDelete }) => {
   return(
     <div style = {blogStyle}>
       {blog.title} {blog.author} <Button name = {show ? 'Hide' : 'Show'}  action = {toggleShow}/>
-        <div style = {showWhenShown}>
+      <div style = {showWhenShown}>
           URL: {blog.url}<br/>
           likes: {blog.likes}
-          <Button name = 'like' action = {addLike}/>
-          <Button name = 'delete' action = {deleteBlog}/>
-        </div>
+        <Button name = 'like' action = {addLike}/>
+        <Button name = 'delete' action = {deleteBlog}/>
+      </div>
     </div>
   )
 }

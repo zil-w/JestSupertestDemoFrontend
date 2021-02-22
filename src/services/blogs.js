@@ -4,54 +4,29 @@ const baseUrl = '/api/blogs'
 const loginUrl = '/api/'
 
 const getAll = async () => {
-  try{
-    const response = await axios.get(tempUrl + baseUrl)
-    return response.data
-  }
-  catch(error){
-    throw error
-  }
+  const response = await axios.get(tempUrl + baseUrl)
+  return response.data
 }
 
 const authenticateUser = async (username, password) => {
-  try{
-    const loginRes = await axios.post(tempUrl + loginUrl, {username, password})
-    return loginRes.data
-  }
-  catch(error){
-    throw error
-  }
+  const loginRes = await axios.post(tempUrl + loginUrl, { username, password })
+  return loginRes.data
 }
 
 const submitBlog = async (title, url, author, token) => {
-  try{
-    const blogSubRes = await axios.post(tempUrl + baseUrl, {title, url, author}, {headers:{'Authorization': `bearer ${token}`}})
-    return blogSubRes.data
-  }
-  catch(error){
-    throw error
-  }
+  const blogSubRes = await axios.post(tempUrl + baseUrl, { title, url, author }, { headers:{ 'Authorization': `bearer ${token}` } })
+  return blogSubRes.data
 }
 
 const updateBlog = async updatedBlog => {
-  try{
-    delete updatedBlog.user //this property makes mongoose's findByIdAndUpdate method throw a cast error, for objectID, for some reason
-    const updateBlogRes = await axios.put(tempUrl + baseUrl + `/${updatedBlog.id}`, updatedBlog)
-    return updateBlogRes.data
-  }
-  catch(error){
-    throw error
-  }
+  delete updatedBlog.user //this property makes mongoose's findByIdAndUpdate method throw a cast error, for objectID, for some reason
+  const updateBlogRes = await axios.put(tempUrl + baseUrl + `/${updatedBlog.id}`, updatedBlog)
+  return updateBlogRes.data
 }
 
 const deleteBlog = async blogID => {
-  try{
-    const updateBlogRes = await axios.delete(tempUrl + baseUrl + `/${blogID}`)
-    return updateBlogRes.data
-  }
-  catch(error){
-    throw error
-  }
+  const updateBlogRes = await axios.delete(tempUrl + baseUrl + `/${blogID}`)
+  return updateBlogRes.data
 }
 
 export default { getAll, authenticateUser, submitBlog, updateBlog, deleteBlog }

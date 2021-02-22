@@ -34,7 +34,6 @@ const submitBlog = async (title, url, author, token) => {
 }
 
 const updateBlog = async updatedBlog => {
-  console.log('blog updater in service is being called')
   try{
     delete updatedBlog.user //this property makes mongoose's findByIdAndUpdate method throw a cast error, for objectID, for some reason
     const updateBlogRes = await axios.put(tempUrl + baseUrl + `/${updatedBlog.id}`, updatedBlog)
@@ -45,4 +44,14 @@ const updateBlog = async updatedBlog => {
   }
 }
 
-export default { getAll, authenticateUser, submitBlog, updateBlog }
+const deleteBlog = async blogID => {
+  try{
+    const updateBlogRes = await axios.delete(tempUrl + baseUrl + `/${blogID}`)
+    return updateBlogRes.data
+  }
+  catch(error){
+    throw error
+  }
+}
+
+export default { getAll, authenticateUser, submitBlog, updateBlog, deleteBlog }

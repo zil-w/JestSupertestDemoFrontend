@@ -1,22 +1,25 @@
 import React, {useState} from 'react'
 import Button from './Button'
 
-const Blog = ({ blog, blogUpdate }) => {
+const Blog = ({ blog, blogUpdate, blogDelete }) => {
   const [show, setShow] = useState(false)
   const showWhenShown = {display: (show ? '' : 'none')}
-  //const hideWhenShown = {visible: show ? 'none' : ''}
 
   const toggleShow = () => {
     setShow(!show)
   }
 
   const addLike = async () => {
-    //console.log('wow')
     const newBlog = {...blog, likes: blog.likes + 1}
-    console.log('updated blog:', newBlog)
     await blogUpdate(newBlog)
   }
-
+  
+  const deleteBlog = async () => {
+    const shouldDelete = window.confirm('Would you like to delete this blog?')
+    if(shouldDelete){
+      await blogDelete(blog.id)
+    }
+  }
 
   const blogStyle = { //taken from fullstackopen, https://fullstackopen.com/en/part5/props_children_and_proptypes
     paddingTop: 10,
@@ -33,6 +36,7 @@ const Blog = ({ blog, blogUpdate }) => {
           URL: {blog.url}<br/>
           likes: {blog.likes}
           <Button name = 'like' action = {addLike}/>
+          <Button name = 'delete' action = {deleteBlog}/>
         </div>
     </div>
   )

@@ -6,14 +6,6 @@ import Button from './components/Button'
 import BlogSubForm from './components/BlogSubForm'
 import SystemMessage from './components/SystemMessage'
 import Toggle from './components/Toggle'
-//let's try and refractor the axios requests to use await/asynch
-//let's make it so that your blog posting function:
-//show up as  submit blog button (done)
-//onclick, it expands into the actual form with a cancel button (done)
-//on submission or cancellation the form is cleared and retracted (done)
-//-we could use a wrapper component for visibility (done)
-//make use of ref, React.forwardRef and useImperativeHandler, so you can access wrapper component's visibility from app (done)
-//move the states for form to the form component (done, but we need to find a way to modify a variable out of .then, done)
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -104,7 +96,6 @@ const App = () => {
   }
 
   const blogUpdateHandler = async updatedBlog => {
-    console.log('blog updater is at least being called')
     try{
       const submittedUpdate = await blogService.updateBlog(updatedBlog)
       const updatedBlogs = blogs.map(blog => (blog.id === submittedUpdate.id) ? submittedUpdate : blog)
@@ -112,6 +103,25 @@ const App = () => {
     }
     catch(error){
       console.log('failed to update blog:', error)
+      changeSysMsg(true, error.response.data.error)
+      resetSysMsg(3000)
+    }
+  }
+
+  const blogDeleteHandler = async blogID => {
+    try{
+      const deletedBlog = await blogService.deleteBlog(blogID)
+      const updatedBlogs = []
+      for(const blog of blogs){
+        if(blog.id !== deletedBlog.id)
+          updatedBlogs.push(blog)
+      }
+      setBlogs(updatedBlogs)
+    }
+    catch(error){
+      console.log('failed to delete blog:', error)
+      changeSysMsg(true, error.response.data.error)
+      resetSysMsg(3000)
     }
   }
 
@@ -126,7 +136,7 @@ const App = () => {
           <Toggle ref = {toggleRef} showButtonName = 'Add Blog' hideButtonName = 'Cancel'>
             <BlogSubForm formSubHandler={blogSubHandler}/>
           </Toggle>
-          <BlogDisplay blogs = {blogs} blogUpdate = {blogUpdateHandler}/>
+          <BlogDisplay blogs = {blogs} blogUpdate = {blogUpdateHandler} blogDelete = {blogDeleteHandler}/>
         </div>
       }
     </div>

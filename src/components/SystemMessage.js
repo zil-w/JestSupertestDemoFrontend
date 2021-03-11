@@ -23,7 +23,7 @@ const SystemMessage = ({ isError, sysMsg }) => {
   }
   else{
     //console.log('is detecting non empty message')
-    return(<p style={isError ? errorStyle : successStyle}>{sysMsg}</p>)
+    return(<p id = 'system-status' style={isError ? errorStyle : successStyle}>{sysMsg}</p>)
   }
 }
 

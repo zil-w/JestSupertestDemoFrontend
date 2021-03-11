@@ -9,7 +9,6 @@ describe('Testing the blog submission form', () => {
 
   beforeEach(() => {
     submissionForm = render(<BlogSubForm formSubHandler={mockSubmitter} />)
-    //submissionForm.debug()
   })
 
   test('Check if the form submits with the right info', () => {

@@ -24,3 +24,9 @@ yarn-error.log*
 
 # vs code workspace
 .code-workspace
+
+# Cypress recordings
+/cypress/videos
+
+# notes
+/notes.txt

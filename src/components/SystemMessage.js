@@ -1,6 +1,9 @@
 import React from 'react'
+import {useSelector} from 'react-redux'
 
-const SystemMessage = ({ isError, sysMsg }) => {
+const SystemMessage = () => {
+  const msgState = useSelector(state => state.notification)
+
   const errorStyle = {
     color: 'red',
     width: 500,
@@ -15,15 +18,11 @@ const SystemMessage = ({ isError, sysMsg }) => {
     border: 'solid green'
   }
 
-  //console.log('received message:', sysMsg)
-
-  if(sysMsg === ''){
-    //console.log('is detecting empty message')
+  if(msgState.message === ''){//this is probably worse performance than to just do the conditional rendering inside app.js
     return(<></>)
   }
   else{
-    //console.log('is detecting non empty message')
-    return(<p id = 'system-status' style={isError ? errorStyle : successStyle}>{sysMsg}</p>)
+    return(<p id = 'system-status' style={msgState.isError ? errorStyle : successStyle}>{msgState.message}</p>)
   }
 }
 

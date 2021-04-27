@@ -28,8 +28,17 @@ const websiteUrl = 'http://localhost:3000'
 
 //this works
 Cypress.Commands.add('login', ({username, password}) => {
-    cy.request('post', apiUrl, {username, password})
+    // cy.request('post', apiUrl, {username, password})
+    cy.request({
+        method: "POST",
+        url: apiUrl,
+        body: {
+            username,
+            password
+        }
+    })
     .then(response => {
+        console.log('logging in successful, received server res:', response.body)
         localStorage.setItem('name', response.body.name)
         localStorage.setItem('token', response.body.token)
         cy.visit(websiteUrl)
@@ -54,4 +63,45 @@ Cypress.Commands.add('makePost', ({title, url, author, token}) => {
         body: {title, url, author}
     })
     .then(response => cy.visit(websiteUrl))
+})
+
+Cypress.Commands.add('makeManyPosts', ({ posts, token }) => { //this is a fucking nightmare, let's try a recursive function
+    console.log('manyPost is being called')
+    const auth = {'bearer': token}
+
+    const sendRequest = function(posts){//recursive actually works WTF, there must be a better way to do this right???
+        if(posts.length > 0){
+            const [post, ...remainingPosts] = posts 
+            cy.request({
+                method: 'POST',
+                url: `${apiUrl}blogs`,
+                auth,
+                body: {title:post.title, url:post.url, author:post.author}
+            })
+            .then(response => {
+                sendRequest(remainingPosts)
+            })
+        }
+        else{
+            return
+        }
+    }
+
+    // for(let i = 0; i<posts.length; i++){
+    //     cy.request({
+    //         method: 'POST',
+    //         url: `${apiUrl}blogs`,
+    //         auth,
+    //         body: {
+    //             title: posts[i].title,
+    //             url: posts[i].url,
+    //             author:posts[i].author
+    //         }
+    //     }).as(`makePost${i}`)
+
+    //     cy.wait(`@makePost${i}`)
+    // }
+    sendRequest(posts)
+
+    cy.visit(websiteUrl)
 })

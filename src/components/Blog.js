@@ -30,7 +30,7 @@ const Blog = ({ blog, blogUpdate, blogDelete, loggedInName }) => {
   }
 
   return(
-    <div style = {blogStyle}>
+    <div className='blog' style = {blogStyle}>
       {blog.title} {blog.author} <Button name = {show ? 'Hide' : 'Show'}  action = {toggleShow}/>
       <div className = 'conditionally_displayed' style = {showWhenShown}>
         URL: {blog.url}<br/>

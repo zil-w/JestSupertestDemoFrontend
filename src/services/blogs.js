@@ -1,5 +1,6 @@
 import axios from 'axios'//I don't remember how routing worked
-const tempUrl = 'http://localhost:3003'
+//const tempUrl = 'http://localhost:3003'
+const tempUrl = ''
 const baseUrl = '/api/blogs'
 const loginUrl = '/api/'
 const userUrl = '/api/users'

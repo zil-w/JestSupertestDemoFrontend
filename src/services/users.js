@@ -1,5 +1,6 @@
 import axios from 'axios'
-const tempUrl = 'http://localhost:3003'
+//const tempUrl = 'http://localhost:3003'
+const tempUrl = ''
 const userUrl = '/api/users'
 
 const getUsers = async () => {

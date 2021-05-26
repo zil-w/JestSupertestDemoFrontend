@@ -9,8 +9,10 @@ import Toggle from './components/Toggle'
 import Users from './components/Users'
 import { useDispatch, useSelector } from 'react-redux'
 import { msgActions, blogActions, userActions } from './reducers/reducers'
-import { Route, Link, Switch } from 'react-router-dom'
+import { Route, useHistory, Switch } from 'react-router-dom'
 import User from './components/User'
+import BlogView from './components/BlogView'
+import NavMenu from './components/NavMenu'
 /*
 to-do
 -add a get user service (done)
@@ -34,6 +36,7 @@ const App = () => {
   const msgState = useSelector(state => state.notification)
   const userState = useSelector(state => state.user)
   const toggleRef = useRef()
+  const history = useHistory()
 
   useEffect(() => {
     const setInitialBlogs = async () => { //we need to do this because effect hooks are made synchronous to avoid race condition
@@ -97,6 +100,7 @@ const App = () => {
     setLoggedIn(false)
     //setName('')
     dispatch(userActions.resetUser())
+    history.push('/')
   }
 
   //actually we don't need this at all because newly submitted blogs have zero like
@@ -162,35 +166,48 @@ const App = () => {
     }
   }
 
-  return (
-    <Switch>
-      <Route path='/users/:id'>
-        <User/>
-      </Route>
-      <Route path='/users'>
-        <Users/>
-      </Route>
-      <Route path='/blogs/:id'>
-        <BlogView/>
-      </Route>
-      <Route path='/'>
-        <div>
-          {msgState.message && <SystemMessage /> /*it seems like this prevents systemMessage's logic getting re-executed on every app re-render*/}
-          {!loggedIn && <LoginForm loginHandler={loginHandler} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />}
-          {loggedIn &&
+  if (userState !== '') {
+    return (
+      <>
+        {msgState.message && <SystemMessage /> /*it seems like this prevents systemMessage's logic getting re-executed on every app re-render*/}
+        <NavMenu name={userState} logoutHandler={logoutHandler} />
+        <Switch>
+          <Route path='/users/:id'>
+            <User />
+          </Route>
+          <Route path='/users'>
+            <Users />
+          </Route>
+          <Route path='/blogs/:id'>
+            <BlogView />
+          </Route>
+          <Route path='/'>
             <div>
-              <h2>Hello {userState}!</h2>
-              <Button name={'log out'} action={logoutHandler} />
-              <Toggle ref={toggleRef} showButtonName='Add Blog' hideButtonName='Cancel'>
-                <BlogSubForm formSubHandler={blogSubHandler} />
-              </Toggle>
-              <BlogDisplay blogs={blogs} blogUpdate={blogUpdateHandler} blogDelete={blogDeleteHandler} />
+              {loggedIn &&
+                <div>
+                  <h2>Hello {userState}!</h2>
+                  <Button name={'log out'} action={logoutHandler} />
+                  <Toggle ref={toggleRef} showButtonName='Add Blog' hideButtonName='Cancel'>
+                    <BlogSubForm formSubHandler={blogSubHandler} />
+                  </Toggle>
+                  <BlogDisplay blogs={blogs} blogUpdate={blogUpdateHandler} blogDelete={blogDeleteHandler} />
+                </div>
+              }
             </div>
-          }
-        </div>
-      </Route>
-    </Switch>
-  )
+          </Route>
+        </Switch>
+      </>
+    )
+  }
+  else {
+    return (
+      <Switch>
+        <Route path='/'>
+          <LoginForm loginHandler={loginHandler} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
+        </Route>
+     </Switch>
+   ) 
+  }
 }
 
 export default App

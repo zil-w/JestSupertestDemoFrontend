@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Button from './Button'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, blogUpdate, blogDelete, loggedInName }) => {
   const [show, setShow] = useState(false)
@@ -16,7 +17,7 @@ const Blog = ({ blog, blogUpdate, blogDelete, loggedInName }) => {
 
   const deleteBlog = async () => {
     const shouldDelete = window.confirm('Would you like to delete this blog?')
-    if(shouldDelete){
+    if (shouldDelete) {
       await blogDelete(blog.id)
     }
   }
@@ -29,15 +30,15 @@ const Blog = ({ blog, blogUpdate, blogDelete, loggedInName }) => {
     marginBottom: 5
   }
 
-  return(
-    <div className='blog' style = {blogStyle}>
-      {blog.title} {blog.author} <Button name = {show ? 'Hide' : 'Show'}  action = {toggleShow}/>
-      <div className = 'conditionally_displayed' style = {showWhenShown}>
-        URL: {blog.url}<br/>
+  return (
+    <div className='blog' style={blogStyle}>
+      <Link to={`/blogs/${blog.id}`}> {blog.title} </Link> {blog.author} <Button name={show ? 'Hide' : 'Show'} action={toggleShow} />
+      <div className='conditionally_displayed' style={showWhenShown}>
+        URL: {blog.url}<br />
         likes: {blog.likes}
-        <Button name = 'like' action = {addLike}/>
-        {blog.user && blog.user.name === loggedInName && <Button name = 'delete' action = {deleteBlog}/>}
-        {blog.user && <><br/>Poster: {blog.user.name}</>}
+        <Button name='like' action={addLike} />
+        {blog.user && blog.user.name === loggedInName && <Button name='delete' action={deleteBlog} />}
+        {blog.user && <><br />Poster: {blog.user.name}</>}
       </div>
     </div>
   )

@@ -51,7 +51,7 @@ const App = () => {
     }
 
     setInitialBlogs()
-  }, [])
+  }, [dispatch])
 
   const clearLoginInput = () => {
     setUsername('')
@@ -89,6 +89,7 @@ const App = () => {
       }
     }
     catch (error) {
+      console.log('detecting error', error)
       showFailMsg(`Something went wrong: ${error.response.data.error}`)
     }
     resetSysMsg(3000)
@@ -201,12 +202,15 @@ const App = () => {
   }
   else {
     return (
-      <Switch>
-        <Route path='/'>
-          <LoginForm loginHandler={loginHandler} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
-        </Route>
-     </Switch>
-   ) 
+      <>
+        {msgState.message && <SystemMessage /> /*it seems like this prevents systemMessage's logic getting re-executed on every app re-render*/}
+        <Switch>
+          <Route path='/'>
+            <LoginForm loginHandler={loginHandler} username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
+          </Route>
+        </Switch>
+      </>
+    )
   }
 }
 

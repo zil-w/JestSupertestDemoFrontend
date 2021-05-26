@@ -3,7 +3,6 @@ import axios from 'axios'//I don't remember how routing worked
 const tempUrl = ''
 const baseUrl = '/api/blogs'
 const loginUrl = '/api/'
-const userUrl = '/api/users'
 
 const getAll = async () => {
   const response = await axios.get(tempUrl + baseUrl)

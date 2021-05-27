@@ -126,7 +126,7 @@ const deleteBlog = blog => {
   }
 }
 
-const syncLikeBlog = blog => {
+const syncLikeBlog = blog => { //it seems like we could delegate a lot of axios request to the action creators
   return async dispatch => {
     const updatedBlog = await blogService.updateBlog(blog)
     dispatch({

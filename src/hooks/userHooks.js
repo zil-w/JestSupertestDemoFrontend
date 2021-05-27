@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 //import getUsers from '../services/users'
 
+//WIP
 const useUsers = async () => { //having an async here makes the whole thing return a promise
     const [users, setUsers] = useState([]) //idk why but let's try sticking the server call inside an useEffect hook?
     
